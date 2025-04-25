@@ -1,0 +1,13 @@
+# node e dependências
+node_modules
+dist
+.env
+npm-debug.log
+
+# IDEs
+.vscode
+.idea
+
+# sistema operacional
+.DS_Store
+Thumbs.db
