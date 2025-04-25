@@ -20,10 +20,7 @@ const Dashboard: React.FC = () => {
   const [plantsData, setPlantsData] = useState<Plant[]>([]);
 
   useEffect(() => {
-    // Usando a variável de ambiente para pegar a URL do backend
-    const apiUrl = import.meta.env.VITE_API_URL;
-
-    axios.get(`${apiUrl}/usina`)
+    axios.get('https://helpful-radiance-production.up.railway.app/usina')
       .then(res => {
         // Mapeando os dados das usinas recebidos do backend
         const usinas = res.data.usinas;
