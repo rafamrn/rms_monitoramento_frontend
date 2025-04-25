@@ -20,66 +20,67 @@ const Dashboard: React.FC = () => {
   const [plantsData, setPlantsData] = useState<Plant[]>([]);
 
   useEffect(() => {
-    axios.get('http://localhost:8000/usina')
+    // Usando a variável de ambiente para pegar a URL do backend
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    axios.get(`${apiUrl}/usina`)
       .then(res => {
         // Mapeando os dados das usinas recebidos do backend
         const usinas = res.data.usinas;
 
-// Junta as usinas com nome da "Escola Roda Pião"
-const rodapiao = usinas.filter((u: any) =>
-  u.ps_name.toLowerCase().includes("rodapiao") ||
-  u.ps_name.toLowerCase().includes("roda pião")
-);
+        // Junta as usinas com nome da "Escola Roda Pião"
+        const rodapiao = usinas.filter((u: any) =>
+          u.ps_name.toLowerCase().includes("rodapiao") ||
+          u.ps_name.toLowerCase().includes("roda pião")
+        );
 
-// Soma os dados das usinas da "Escola Roda Pião"
-const escolaRodapiaoUnificada: Plant = {
-  id: "rodapiao",
-  name: "013 - ESCOLA RODAPIÃO",
-  location: "Vila Motta, 1049",
-  status: "active",
-  capacity: rodapiao.reduce((acc, u) => acc + parseFloat(u.capacidade || 0), 0),
-  currentPower: rodapiao.reduce((acc, u) => acc + parseFloat(u.curr_power || 0), 0),
-  dailyEnergy: rodapiao.reduce((acc, u) => acc + parseFloat(u.today_energy || 0), 0),
-  totalEnergy: rodapiao.reduce((acc, u) => acc + parseFloat(u.total_energy || 0), 0),
-  performance: 0, // isso vai ser sobrescrito abaixo
-};
+        // Soma os dados das usinas da "Escola Roda Pião"
+        const escolaRodapiaoUnificada: Plant = {
+          id: "rodapiao",
+          name: "013 - ESCOLA RODAPIÃO",
+          location: "Vila Motta, 1049",
+          status: "active",
+          capacity: rodapiao.reduce((acc, u) => acc + parseFloat(u.capacidade || 0), 0),
+          currentPower: rodapiao.reduce((acc, u) => acc + parseFloat(u.curr_power || 0), 0),
+          dailyEnergy: rodapiao.reduce((acc, u) => acc + parseFloat(u.today_energy || 0), 0),
+          totalEnergy: rodapiao.reduce((acc, u) => acc + parseFloat(u.total_energy || 0), 0),
+          performance: 0, // isso vai ser sobrescrito abaixo
+        };
 
-// Agora calcula a performance dessa usina também
-const currentPowerKW_Rodapiao = escolaRodapiaoUnificada.currentPower;
-escolaRodapiaoUnificada.performance = currentPowerKW_Rodapiao > 0
-  ? Math.ceil((currentPowerKW_Rodapiao / (escolaRodapiaoUnificada.capacity)) * 100)
-  : 0;
+        // Agora calcula a performance dessa usina também
+        const currentPowerKW_Rodapiao = escolaRodapiaoUnificada.currentPower;
+        escolaRodapiaoUnificada.performance = currentPowerKW_Rodapiao > 0
+          ? Math.ceil((currentPowerKW_Rodapiao / (escolaRodapiaoUnificada.capacity)) * 100)
+          : 0;
 
+        // Remove as duas duplicadas da lista original
+        const outrasUsinas = usinas.filter((u: any) =>
+          !u.ps_name.toLowerCase().includes("rodapiao") &&
+          !u.ps_name.toLowerCase().includes("roda pião")
+        );
 
-// Remove as duas duplicadas da lista original
-const outrasUsinas = usinas.filter((u: any) =>
-  !u.ps_name.toLowerCase().includes("rodapiao") &&
-  !u.ps_name.toLowerCase().includes("roda pião")
-);
+        // Mapeia as demais usinas normalmente
+        const plantasRestantes: Plant[] = outrasUsinas.map((item: any) => {
+          const capacidade = parseFloat(item.capacidade) || 0;
+          const currentPower = parseFloat(item.curr_power) || 0;
+          const currentPowerKW = currentPower;
+          const performance = currentPowerKW > 0 ? Math.ceil(currentPowerKW / (capacidade) * 100) : 0;
 
-// Mapeia as demais usinas normalmente
-  const plantasRestantes: Plant[] = outrasUsinas.map((item: any) => {
-  const capacidade = parseFloat(item.capacidade) || 0;
-  const currentPower = parseFloat(item.curr_power) || 0;
-  const currentPowerKW = currentPower;
-  const performance = currentPowerKW > 0 ? Math.ceil(currentPowerKW / (capacidade) * 100) : 0;
+          return {
+            id: item.ps_id.toString(),
+            name: item.ps_name,
+            location: item.location || 'Não informado',
+            status: 'active',
+            capacity: capacidade,
+            currentPower: currentPower,
+            dailyEnergy: parseFloat(item.today_energy) || 0,
+            totalEnergy: parseFloat(item.total_energy) || 0,
+            performance: performance,
+          };
+        });
 
-
-  return {
-    id: item.ps_id.toString(),
-    name: item.ps_name,
-    location: item.location || 'Não informado',
-    status: 'active',
-    capacity: capacidade,
-    currentPower: currentPower,
-    dailyEnergy: parseFloat(item.today_energy) || 0,
-    totalEnergy: parseFloat(item.total_energy) || 0,
-    performance: performance,
-  };
-});
-
-// Junta tudo no state final
-setPlantsData([escolaRodapiaoUnificada, ...plantasRestantes]);
+        // Junta tudo no state final
+        setPlantsData([escolaRodapiaoUnificada, ...plantasRestantes]);
       })
       .catch(err => console.error('Erro ao carregar dados da API:', err));
   }, []);
@@ -119,7 +120,6 @@ setPlantsData([escolaRodapiaoUnificada, ...plantasRestantes]);
               icon={<BarChart className="h-5 w-5 text-primary" />}
             />
           </div>
-
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             <div className="lg:col-span-2">
