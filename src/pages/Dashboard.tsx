@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
   const [plantsData, setPlantsData] = useState<Plant[]>([]);
 
   useEffect(() => {
-    axios.get('https://helpful-radiance-production.up.railway.app/usina') //http://127.0.0.1:8000/usina
+    axios.get('https://helpful-radiance-production.up.railway.app/usina')
       .then(res => {
         // Mapeando os dados das usinas recebidos do backend
         const usinas = res.data.usinas;
@@ -34,7 +34,6 @@ const Dashboard: React.FC = () => {
         // Soma os dados das usinas da "Escola Roda Pião"
         const escolaRodapiaoUnificada: Plant = {
           id: "rodapiao",
-          ps_ids: rodapiao.map((u: any) => u.ps_id.toString()), // 👈 pega todos ps_ids
           name: "013 - ESCOLA RODAPIÃO",
           location: "Vila Motta, 1049",
           status: "active",
@@ -42,7 +41,7 @@ const Dashboard: React.FC = () => {
           currentPower: rodapiao.reduce((acc, u) => acc + parseFloat(u.curr_power || 0), 0),
           dailyEnergy: rodapiao.reduce((acc, u) => acc + parseFloat(u.today_energy || 0), 0),
           totalEnergy: rodapiao.reduce((acc, u) => acc + parseFloat(u.total_energy || 0), 0),
-          performance: 0, // será calculado logo abaixo
+          performance: 0, // isso vai ser sobrescrito abaixo
         };
 
         // Agora calcula a performance dessa usina também
