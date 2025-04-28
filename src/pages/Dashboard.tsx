@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
   const [plantsData, setPlantsData] = useState<Plant[]>([]);
 
   useEffect(() => {
-    axios.get('https://helpful-radiance-production.up.railway.app/usina')
+    axios.get('https://helpful-radiance-production.up.railway.app/usina') //https://helpful-radiance-production.up.railway.app/usina
       .then(res => {
         // Mapeando os dados das usinas recebidos do backend
         const usinas = res.data.usinas;
