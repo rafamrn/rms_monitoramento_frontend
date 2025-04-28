@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -13,6 +12,7 @@ import PerformanceBar from './PerformanceBar';
 
 export interface Plant {
   id: string;
+  ps_ids?: string[]; // <-- ADICIONADO para suportar múltiplos ps_ids
   name: string;
   location: string;
   status: 'active' | 'inactive' | 'maintenance';
